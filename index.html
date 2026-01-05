@@ -5,59 +5,101 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Nexus AI</title>
   <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Nexus AI&quot;,&quot;short_name&quot;:&quot;Nexus&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%230a0a0a&quot;,&quot;theme_color&quot;:&quot;%233b82f6&quot;}">
-  <meta name="theme-color" content="#3b82f6">
+  <meta name="theme-color" content="#0a0a0a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%233b82f6' rx='20' width='100' height='100'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>N</text></svg>">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#0a0a0a;--surface:#141414;--surface2:#1a1a1a;--border:#2a2a2a;--text:#fafafa;--text-dim:#888;--primary:#3b82f6;--primary-hover:#2563eb;--danger:#ef4444;--success:#22c55e}
+    :root{--bg:#09090b;--surface:#18181b;--surface2:#27272a;--border:#3f3f46;--text:#fafafa;--text-dim:#a1a1aa;--primary:#3b82f6;--primary-dim:#1d4ed8;--danger:#ef4444;--success:#22c55e;--warning:#f59e0b}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+
+    /* Header */
     header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface)}
-    .header-left{display:flex;align-items:center;gap:10px}
-    header .logo{width:32px;height:32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px}
-    header h1{font-size:16px;font-weight:600}
-    .header-actions{display:flex;gap:8px}
-    .btn-icon{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text-dim);cursor:pointer;transition:all 0.2s}
-    .btn-icon:hover{background:var(--border);color:var(--text)}
-    .btn-icon.danger:hover{background:var(--danger);border-color:var(--danger);color:white}
-    .settings{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;font-size:13px;background:var(--surface);align-items:center}
-    .settings label{display:flex;align-items:center;gap:6px;color:var(--text-dim)}
-    .settings select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:13px;cursor:pointer}
-    .settings select:focus{outline:none;border-color:var(--primary)}
-    .toggle{position:relative;width:40px;height:22px;background:var(--border);border-radius:11px;cursor:pointer;transition:background 0.2s}
+    .header-left{display:flex;align-items:center;gap:12px}
+    .logo{width:36px;height:36px;background:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 50%,#ec4899 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:white}
+    header h1{font-size:18px;font-weight:600;background:linear-gradient(135deg,#fff,#a1a1aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .header-actions{display:flex;gap:6px}
+    .btn-icon{background:transparent;border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);cursor:pointer;transition:all 0.2s;font-size:16px}
+    .btn-icon:hover{background:var(--surface2);color:var(--text);border-color:var(--text-dim)}
+    .btn-icon.danger:hover{background:rgba(239,68,68,0.1);border-color:var(--danger);color:var(--danger)}
+    .btn-icon.active{background:var(--primary);border-color:var(--primary);color:white}
+
+    /* Settings Panel */
+    .settings-toggle{display:none}
+    .settings{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;background:var(--surface);border-bottom:1px solid var(--border)}
+    .settings-toggle:checked~.settings{max-height:300px;padding:12px 16px}
+    .settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+    .setting-item{display:flex;flex-direction:column;gap:6px}
+    .setting-item label{font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);font-weight:500}
+    .setting-item select,.setting-item input[type="text"]{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;width:100%}
+    .setting-item select:focus,.setting-item input:focus{outline:none;border-color:var(--primary)}
+    .temp-control{display:flex;align-items:center;gap:8px}
+    .temp-control input[type="range"]{flex:1;-webkit-appearance:none;background:var(--surface2);height:6px;border-radius:3px;cursor:pointer}
+    .temp-control input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--primary);border-radius:50%;cursor:pointer}
+    .temp-value{min-width:32px;text-align:center;font-size:13px;color:var(--text);font-weight:500}
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+    .toggle{position:relative;width:44px;height:24px;background:var(--surface2);border-radius:12px;cursor:pointer;transition:background 0.2s}
     .toggle.active{background:var(--primary)}
-    .toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:white;border-radius:50%;transition:transform 0.2s}
-    .toggle.active::after{transform:translateX(18px)}
-    .chat-container{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
-    .message{max-width:88%;padding:12px 16px;border-radius:18px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word;animation:fadeIn 0.2s ease}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    .message.user{background:linear-gradient(135deg,#3b82f6,#2563eb);align-self:flex-end;border-bottom-right-radius:6px;color:white}
-    .message.assistant{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:6px}
-    .message.system{background:transparent;color:var(--text-dim);font-size:12px;text-align:center;align-self:center;padding:8px}
-    .message.error{background:rgba(239,68,68,0.1);border:1px solid var(--danger);color:var(--danger)}
-    .message code{background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;font-family:'SF Mono',Monaco,monospace;font-size:0.9em}
-    .message pre{background:rgba(0,0,0,0.4);padding:12px;border-radius:8px;overflow-x:auto;margin:8px 0}
-    .message pre code{background:none;padding:0}
-    .input-area{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;background:var(--surface)}
-    #input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;color:var(--text);font-size:16px;outline:none;resize:none;min-height:48px;max-height:150px;line-height:1.4;transition:border-color 0.2s}
-    #input:focus{border-color:var(--primary)}
-    #input::placeholder{color:var(--text-dim)}
-    #send{background:linear-gradient(135deg,#3b82f6,#2563eb);border:none;border-radius:12px;padding:12px 20px;color:white;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:15px}
-    #send:hover{transform:scale(1.02);box-shadow:0 4px 12px rgba(59,130,246,0.4)}
-    #send:active{transform:scale(0.98)}
-    #send:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
-    .typing{display:flex;gap:5px;padding:12px 16px;align-items:center}
-    .typing span{width:8px;height:8px;background:var(--text-dim);border-radius:50%;animation:bounce 1.4s infinite ease-in-out both}
+    .toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
+    .toggle.active::after{transform:translateX(20px)}
+
+    /* Chat Container */
+    .chat-container{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
+    .message{max-width:85%;padding:14px 18px;border-radius:20px;line-height:1.6;animation:slideIn 0.3s ease}
+    @keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .message.user{background:linear-gradient(135deg,var(--primary),var(--primary-dim));align-self:flex-end;border-bottom-right-radius:6px;color:white}
+    .message.assistant{background:var(--surface);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:6px}
+    .message.system{background:transparent;color:var(--text-dim);font-size:12px;text-align:center;align-self:center;padding:8px 16px}
+    .message.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5}
+    .message img{max-width:200px;max-height:200px;border-radius:12px;margin-top:8px;cursor:pointer}
+    .message pre{background:rgba(0,0,0,0.4);padding:12px;border-radius:8px;overflow-x:auto;margin:8px 0;font-size:13px}
+    .message code{font-family:'SF Mono',Monaco,'Cascadia Code',monospace;font-size:0.9em}
+    .message:not(pre) code{background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px}
+
+    /* Typing Indicator */
+    .typing{display:flex;gap:6px;padding:14px 18px;align-items:center}
+    .typing span{width:8px;height:8px;background:var(--text-dim);border-radius:50%;animation:pulse 1.4s infinite ease-in-out}
     .typing span:nth-child(1){animation-delay:-0.32s}
     .typing span:nth-child(2){animation-delay:-0.16s}
-    @keyframes bounce{0%,80%,100%{transform:scale(0.4)}40%{transform:scale(1)}}
-    .model-badge{font-size:11px;padding:2px 6px;background:var(--border);border-radius:4px;color:var(--text-dim)}
-    .status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+    @keyframes pulse{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
+
+    /* Input Area */
+    .input-area{padding:12px 16px;border-top:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;gap:10px}
+    .input-row{display:flex;gap:10px;align-items:flex-end}
+    .input-wrapper{flex:1;position:relative;display:flex;align-items:flex-end;background:var(--surface2);border:1px solid var(--border);border-radius:16px;transition:border-color 0.2s}
+    .input-wrapper:focus-within{border-color:var(--primary)}
+    #input{flex:1;background:transparent;border:none;padding:14px 16px;color:var(--text);font-size:16px;outline:none;resize:none;min-height:24px;max-height:150px;line-height:1.4}
+    #input::placeholder{color:var(--text-dim)}
+    .input-actions{display:flex;padding:8px;gap:4px}
+    .input-btn{background:transparent;border:none;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);cursor:pointer;transition:all 0.2s;font-size:18px}
+    .input-btn:hover{background:var(--border);color:var(--text)}
+    .input-btn.has-file{color:var(--success)}
+    #send{background:linear-gradient(135deg,var(--primary),var(--primary-dim));border:none;border-radius:14px;padding:14px 24px;color:white;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:15px;white-space:nowrap}
+    #send:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,130,246,0.4)}
+    #send:active{transform:translateY(0)}
+    #send:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+    /* Image Preview */
+    .image-preview{display:none;padding:0 16px 8px}
+    .image-preview.show{display:block}
+    .preview-container{position:relative;display:inline-block}
+    .preview-img{max-height:80px;border-radius:8px;border:1px solid var(--border)}
+    .preview-remove{position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:var(--danger);border:none;border-radius:50%;color:white;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+    /* Hidden file input */
+    #imageInput{display:none}
+
+    /* Modal */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:100;align-items:center;justify-content:center}
+    .modal.show{display:flex}
+    .modal img{max-width:90%;max-height:90%;border-radius:8px}
+    .modal-close{position:absolute;top:20px;right:20px;background:var(--surface);border:none;width:40px;height:40px;border-radius:50%;color:white;font-size:20px;cursor:pointer}
+
     @media(max-width:480px){
-      .settings{gap:8px;padding:8px 12px}
-      .message{max-width:92%}
-      header h1{font-size:15px}
+      .settings-grid{grid-template-columns:1fr}
+      .message{max-width:90%}
+      #send{padding:14px 18px}
     }
   </style>
 </head>
@@ -66,83 +108,164 @@
     <div class="header-left">
       <div class="logo">N</div>
       <h1>Nexus AI</h1>
-      <div class="status-dot" title="Connected"></div>
     </div>
     <div class="header-actions">
-      <button class="btn-icon" id="export" title="Export Chat">📥</button>
-      <button class="btn-icon danger" id="clear" title="Clear Chat">🗑️</button>
+      <label class="btn-icon" for="settingsToggle" title="Settings">⚙️</label>
+      <button class="btn-icon" id="export" title="Export">📥</button>
+      <button class="btn-icon danger" id="clear" title="Clear">🗑️</button>
     </div>
   </header>
+
+  <input type="checkbox" id="settingsToggle" class="settings-toggle">
   <div class="settings">
-    <label>
-      Model:
-      <select id="model">
-        <optgroup label="Grok 4">
-          <option value="grok-4-latest">Grok-4 (Latest)</option>
-        </optgroup>
-        <optgroup label="Grok 3">
-          <option value="grok-3-latest">Grok-3 (Latest)</option>
-          <option value="grok-3-fast">Grok-3 Fast</option>
-        </optgroup>
-        <optgroup label="Grok 3 Mini">
-          <option value="grok-3-mini-latest">Grok-3 Mini</option>
-          <option value="grok-3-mini-fast">Grok-3 Mini Fast</option>
-        </optgroup>
-        <optgroup label="Grok 2">
-          <option value="grok-2-latest">Grok-2</option>
-          <option value="grok-2-vision-latest">Grok-2 Vision</option>
-        </optgroup>
-      </select>
-    </label>
-    <label>
-      RAG
-      <div class="toggle active" id="ragToggle" title="Search your documents"></div>
-    </label>
+    <div class="settings-grid">
+      <div class="setting-item">
+        <label>Model</label>
+        <select id="model">
+          <optgroup label="Grok 4.1 (Latest)">
+            <option value="grok-4.1-thinking">Grok 4.1 Thinking 🧠</option>
+            <option value="grok-4.1">Grok 4.1</option>
+            <option value="grok-4.1-fast-reasoning">Grok 4.1 Fast (Reasoning)</option>
+            <option value="grok-4.1-fast">Grok 4.1 Fast</option>
+          </optgroup>
+          <optgroup label="Grok Code">
+            <option value="grok-code-fast-1">Grok Code Fast 1 💻</option>
+          </optgroup>
+          <optgroup label="Grok 4">
+            <option value="grok-4-latest">Grok-4 (Latest)</option>
+          </optgroup>
+          <optgroup label="Grok 3">
+            <option value="grok-3-latest">Grok-3 (Latest)</option>
+            <option value="grok-3-fast">Grok-3 Fast</option>
+          </optgroup>
+          <optgroup label="Grok 3 Mini">
+            <option value="grok-3-mini-latest">Grok-3 Mini</option>
+            <option value="grok-3-mini-fast">Grok-3 Mini Fast ⚡</option>
+          </optgroup>
+          <optgroup label="Vision">
+            <option value="grok-2-vision-latest">Grok-2 Vision 👁️</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>Temperature</label>
+        <div class="temp-control">
+          <input type="range" id="temp" min="0" max="2" step="0.1" value="0.7">
+          <span class="temp-value" id="tempValue">0.7</span>
+        </div>
+      </div>
+      <div class="setting-item">
+        <label>System Prompt</label>
+        <input type="text" id="systemPrompt" placeholder="You are a helpful assistant...">
+      </div>
+    </div>
+    <div class="toggle-row">
+      <span style="font-size:13px;color:var(--text-dim)">RAG Search (Your Documents)</span>
+      <div class="toggle active" id="ragToggle"></div>
+    </div>
+    <div class="toggle-row">
+      <span style="font-size:13px;color:var(--text-dim)">Web Search</span>
+      <div class="toggle" id="webToggle"></div>
+    </div>
   </div>
+
   <div class="chat-container" id="chat">
-    <div class="message system">Ready. Using <span class="model-badge">Grok-4</span> with RAG enabled.</div>
+    <div class="message system">Ready to chat. Tap ⚙️ for settings.</div>
   </div>
+
+  <div class="image-preview" id="imagePreview">
+    <div class="preview-container">
+      <img class="preview-img" id="previewImg">
+      <button class="preview-remove" id="removeImage">×</button>
+    </div>
+  </div>
+
   <div class="input-area">
-    <textarea id="input" placeholder="Ask anything..." rows="1"></textarea>
-    <button id="send">Send</button>
+    <div class="input-row">
+      <div class="input-wrapper">
+        <textarea id="input" placeholder="Message Nexus..." rows="1"></textarea>
+        <div class="input-actions">
+          <button class="input-btn" id="attachBtn" title="Attach Image">📷</button>
+        </div>
+      </div>
+      <button id="send">Send</button>
+    </div>
   </div>
+
+  <input type="file" id="imageInput" accept="image/*">
+
+  <div class="modal" id="imageModal">
+    <button class="modal-close" id="modalClose">×</button>
+    <img id="modalImg">
+  </div>
+
   <script>
     const API = 'https://ccjdctnmgrweserduxhi.supabase.co/functions/v1/chat-api';
     const chat = document.getElementById('chat');
     const input = document.getElementById('input');
     const sendBtn = document.getElementById('send');
     const modelSelect = document.getElementById('model');
+    const tempSlider = document.getElementById('temp');
+    const tempValue = document.getElementById('tempValue');
+    const systemPrompt = document.getElementById('systemPrompt');
     const ragToggle = document.getElementById('ragToggle');
+    const webToggle = document.getElementById('webToggle');
     const clearBtn = document.getElementById('clear');
     const exportBtn = document.getElementById('export');
+    const attachBtn = document.getElementById('attachBtn');
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const removeImageBtn = document.getElementById('removeImage');
+    const imageModal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalClose = document.getElementById('modalClose');
+
     let messages = [];
-    let enableRag = true;
+    let settings = {
+      enableRag: true,
+      enableWeb: false,
+      temperature: 0.7,
+      systemPrompt: '',
+      model: 'grok-4.1-thinking'
+    };
+    let currentImage = null;
 
     // Load saved state
-    const saved = localStorage.getItem('nexus-chat');
+    const saved = localStorage.getItem('nexus-state');
     if (saved) {
       try {
         const state = JSON.parse(saved);
         messages = state.messages || [];
-        enableRag = state.enableRag ?? true;
-        if (state.model) modelSelect.value = state.model;
-        messages.forEach(m => addMessage(m.role, m.content, false));
-        if (!enableRag) ragToggle.classList.remove('active');
+        settings = { ...settings, ...state.settings };
+        modelSelect.value = settings.model;
+        tempSlider.value = settings.temperature;
+        tempValue.textContent = settings.temperature;
+        systemPrompt.value = settings.systemPrompt || '';
+        if (!settings.enableRag) ragToggle.classList.remove('active');
+        if (settings.enableWeb) webToggle.classList.add('active');
+        messages.forEach(m => renderMessage(m.role, m.content, m.image, false));
       } catch {}
     }
 
     function saveState() {
-      localStorage.setItem('nexus-chat', JSON.stringify({
-        messages,
-        enableRag,
-        model: modelSelect.value
-      }));
+      localStorage.setItem('nexus-state', JSON.stringify({ messages, settings }));
     }
 
-    function addMessage(role, content, save = true) {
+    function renderMessage(role, content, image = null, save = true) {
       const div = document.createElement('div');
       div.className = 'message ' + role;
-      div.textContent = content;
+
+      if (image && role === 'user') {
+        const img = document.createElement('img');
+        img.src = image;
+        img.onclick = () => showModal(image);
+        div.appendChild(img);
+        div.appendChild(document.createElement('br'));
+      }
+
+      const text = document.createTextNode(content);
+      div.appendChild(text);
       chat.appendChild(div);
       chat.scrollTop = chat.scrollHeight;
       if (save) saveState();
@@ -159,30 +282,69 @@
     }
 
     function hideTyping() {
-      const el = document.getElementById('typing');
-      if (el) el.remove();
+      document.getElementById('typing')?.remove();
+    }
+
+    function showModal(src) {
+      modalImg.src = src;
+      imageModal.classList.add('show');
     }
 
     async function sendMessage() {
       const content = input.value.trim();
-      if (!content) return;
+      if (!content && !currentImage) return;
 
       input.value = '';
       input.style.height = 'auto';
       sendBtn.disabled = true;
 
-      addMessage('user', content);
-      messages.push({ role: 'user', content });
+      const userMsg = { role: 'user', content: content || '(image)' };
+      if (currentImage) userMsg.image = currentImage;
+
+      renderMessage('user', content || 'Analyze this image:', currentImage);
+      messages.push(userMsg);
+
+      // Clear image
+      currentImage = null;
+      imagePreview.classList.remove('show');
+      attachBtn.classList.remove('has-file');
+
       showTyping();
 
       try {
+        // Build messages for API
+        const apiMessages = [];
+
+        // Add system prompt if set
+        if (settings.systemPrompt?.trim()) {
+          apiMessages.push({ role: 'system', content: settings.systemPrompt.trim() });
+        }
+
+        // Add conversation messages
+        messages.forEach(m => {
+          if (m.image) {
+            // Vision message with image
+            apiMessages.push({
+              role: m.role,
+              content: [
+                { type: 'text', text: m.content },
+                { type: 'image_url', image_url: { url: m.image } }
+              ]
+            });
+          } else {
+            apiMessages.push({ role: m.role, content: m.content });
+          }
+        });
+
         const res = await fetch(API, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages,
+            messages: apiMessages,
             model: modelSelect.value,
-            enableRag
+            temperature: parseFloat(tempSlider.value),
+            enableRag: settings.enableRag,
+            enableWeb: settings.enableWeb
           })
         });
 
@@ -196,7 +358,7 @@
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let assistantContent = '';
-        const assistantDiv = addMessage('assistant', '', false);
+        const assistantDiv = renderMessage('assistant', '', null, false);
 
         while (true) {
           const { done, value } = await reader.read();
@@ -224,7 +386,7 @@
         saveState();
       } catch (err) {
         hideTyping();
-        const errorDiv = addMessage('system', 'Error: ' + err.message, false);
+        const errorDiv = renderMessage('system', 'Error: ' + err.message, null, false);
         errorDiv.classList.add('error');
       }
 
@@ -232,7 +394,7 @@
       input.focus();
     }
 
-    // Event listeners
+    // Event Listeners
     sendBtn.addEventListener('click', sendMessage);
 
     input.addEventListener('keydown', e => {
@@ -247,18 +409,72 @@
       input.style.height = Math.min(input.scrollHeight, 150) + 'px';
     });
 
-    ragToggle.addEventListener('click', () => {
-      enableRag = !enableRag;
-      ragToggle.classList.toggle('active', enableRag);
+    tempSlider.addEventListener('input', () => {
+      tempValue.textContent = tempSlider.value;
+      settings.temperature = parseFloat(tempSlider.value);
       saveState();
     });
 
-    modelSelect.addEventListener('change', saveState);
+    modelSelect.addEventListener('change', () => {
+      settings.model = modelSelect.value;
+      saveState();
+    });
+
+    systemPrompt.addEventListener('change', () => {
+      settings.systemPrompt = systemPrompt.value;
+      saveState();
+    });
+
+    ragToggle.addEventListener('click', () => {
+      settings.enableRag = !settings.enableRag;
+      ragToggle.classList.toggle('active', settings.enableRag);
+      saveState();
+    });
+
+    webToggle.addEventListener('click', () => {
+      settings.enableWeb = !settings.enableWeb;
+      webToggle.classList.toggle('active', settings.enableWeb);
+      saveState();
+    });
+
+    attachBtn.addEventListener('click', () => imageInput.click());
+
+    imageInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          currentImage = ev.target.result;
+          previewImg.src = currentImage;
+          imagePreview.classList.add('show');
+          attachBtn.classList.add('has-file');
+          // Auto-switch to vision model
+          if (!modelSelect.value.includes('vision')) {
+            modelSelect.value = 'grok-2-vision-latest';
+            settings.model = modelSelect.value;
+            saveState();
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+      imageInput.value = '';
+    });
+
+    removeImageBtn.addEventListener('click', () => {
+      currentImage = null;
+      imagePreview.classList.remove('show');
+      attachBtn.classList.remove('has-file');
+    });
+
+    modalClose.addEventListener('click', () => imageModal.classList.remove('show'));
+    imageModal.addEventListener('click', e => {
+      if (e.target === imageModal) imageModal.classList.remove('show');
+    });
 
     clearBtn.addEventListener('click', () => {
       if (confirm('Clear all messages?')) {
         messages = [];
-        chat.innerHTML = '<div class="message system">Chat cleared. Using <span class="model-badge">' + modelSelect.options[modelSelect.selectedIndex].text + '</span></div>';
+        chat.innerHTML = '<div class="message system">Chat cleared.</div>';
         saveState();
       }
     });
@@ -274,7 +490,6 @@
       URL.revokeObjectURL(url);
     });
 
-    // Focus input on load
     input.focus();
   </script>
 </body>
