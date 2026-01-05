@@ -10,67 +10,272 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#0a0a0a;--surface:#1a1a1a;--border:#2a2a2a;--text:#fafafa;--text-dim:#888;--primary:#3b82f6;--primary-hover:#2563eb}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column}
-    header{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-    header .logo{width:36px;height:36px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:bold}
-    header h1{font-size:18px;font-weight:600}
-    .chat-container{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
-    .message{max-width:85%;padding:12px 16px;border-radius:16px;line-height:1.5;white-space:pre-wrap}
-    .message.user{background:var(--primary);align-self:flex-end;border-bottom-right-radius:4px}
-    .message.assistant{background:var(--surface);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px}
-    .message.system{background:transparent;color:var(--text-dim);font-size:13px;text-align:center;align-self:center}
-    .input-area{padding:16px;border-top:1px solid var(--border);display:flex;gap:12px}
-    #input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;color:var(--text);font-size:16px;outline:none;resize:none;min-height:48px;max-height:120px}
+    :root{--bg:#0a0a0a;--surface:#141414;--surface2:#1a1a1a;--border:#2a2a2a;--text:#fafafa;--text-dim:#888;--primary:#3b82f6;--primary-hover:#2563eb;--danger:#ef4444;--success:#22c55e}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+    header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface)}
+    .header-left{display:flex;align-items:center;gap:10px}
+    header .logo{width:32px;height:32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px}
+    header h1{font-size:16px;font-weight:600}
+    .header-actions{display:flex;gap:8px}
+    .btn-icon{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text-dim);cursor:pointer;transition:all 0.2s}
+    .btn-icon:hover{background:var(--border);color:var(--text)}
+    .btn-icon.danger:hover{background:var(--danger);border-color:var(--danger);color:white}
+    .settings{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;font-size:13px;background:var(--surface);align-items:center}
+    .settings label{display:flex;align-items:center;gap:6px;color:var(--text-dim)}
+    .settings select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:13px;cursor:pointer}
+    .settings select:focus{outline:none;border-color:var(--primary)}
+    .toggle{position:relative;width:40px;height:22px;background:var(--border);border-radius:11px;cursor:pointer;transition:background 0.2s}
+    .toggle.active{background:var(--primary)}
+    .toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:white;border-radius:50%;transition:transform 0.2s}
+    .toggle.active::after{transform:translateX(18px)}
+    .chat-container{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+    .message{max-width:88%;padding:12px 16px;border-radius:18px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word;animation:fadeIn 0.2s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .message.user{background:linear-gradient(135deg,#3b82f6,#2563eb);align-self:flex-end;border-bottom-right-radius:6px;color:white}
+    .message.assistant{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:6px}
+    .message.system{background:transparent;color:var(--text-dim);font-size:12px;text-align:center;align-self:center;padding:8px}
+    .message.error{background:rgba(239,68,68,0.1);border:1px solid var(--danger);color:var(--danger)}
+    .message code{background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;font-family:'SF Mono',Monaco,monospace;font-size:0.9em}
+    .message pre{background:rgba(0,0,0,0.4);padding:12px;border-radius:8px;overflow-x:auto;margin:8px 0}
+    .message pre code{background:none;padding:0}
+    .input-area{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;background:var(--surface)}
+    #input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;color:var(--text);font-size:16px;outline:none;resize:none;min-height:48px;max-height:150px;line-height:1.4;transition:border-color 0.2s}
     #input:focus{border-color:var(--primary)}
-    #send{background:var(--primary);border:none;border-radius:12px;padding:12px 20px;color:white;font-weight:600;cursor:pointer;transition:background 0.2s}
-    #send:hover{background:var(--primary-hover)}
-    #send:disabled{opacity:0.5;cursor:not-allowed}
-    .typing{display:flex;gap:4px;padding:12px 16px}
+    #input::placeholder{color:var(--text-dim)}
+    #send{background:linear-gradient(135deg,#3b82f6,#2563eb);border:none;border-radius:12px;padding:12px 20px;color:white;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:15px}
+    #send:hover{transform:scale(1.02);box-shadow:0 4px 12px rgba(59,130,246,0.4)}
+    #send:active{transform:scale(0.98)}
+    #send:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
+    .typing{display:flex;gap:5px;padding:12px 16px;align-items:center}
     .typing span{width:8px;height:8px;background:var(--text-dim);border-radius:50%;animation:bounce 1.4s infinite ease-in-out both}
     .typing span:nth-child(1){animation-delay:-0.32s}
     .typing span:nth-child(2){animation-delay:-0.16s}
-    @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
-    .settings{padding:8px 16px;border-bottom:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap;font-size:13px}
-    .settings label{display:flex;align-items:center;gap:6px}
-    .settings select,.settings input[type="checkbox"]{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px}
+    @keyframes bounce{0%,80%,100%{transform:scale(0.4)}40%{transform:scale(1)}}
+    .model-badge{font-size:11px;padding:2px 6px;background:var(--border);border-radius:4px;color:var(--text-dim)}
+    .status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+    @media(max-width:480px){
+      .settings{gap:8px;padding:8px 12px}
+      .message{max-width:92%}
+      header h1{font-size:15px}
+    }
   </style>
 </head>
 <body>
-  <header><div class="logo">N</div><h1>Nexus AI</h1></header>
+  <header>
+    <div class="header-left">
+      <div class="logo">N</div>
+      <h1>Nexus AI</h1>
+      <div class="status-dot" title="Connected"></div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="export" title="Export Chat">📥</button>
+      <button class="btn-icon danger" id="clear" title="Clear Chat">🗑️</button>
+    </div>
+  </header>
   <div class="settings">
-    <label>Model:<select id="model"><option value="grok-4-latest">Grok-4</option><option value="grok-3-latest">Grok-3</option><option value="grok-3-mini-latest">Grok-3 Mini</option></select></label>
-    <label><input type="checkbox" id="rag" checked>RAG Search</label>
+    <label>
+      Model:
+      <select id="model">
+        <optgroup label="Grok 4">
+          <option value="grok-4-latest">Grok-4 (Latest)</option>
+        </optgroup>
+        <optgroup label="Grok 3">
+          <option value="grok-3-latest">Grok-3 (Latest)</option>
+          <option value="grok-3-fast">Grok-3 Fast</option>
+        </optgroup>
+        <optgroup label="Grok 3 Mini">
+          <option value="grok-3-mini-latest">Grok-3 Mini</option>
+          <option value="grok-3-mini-fast">Grok-3 Mini Fast</option>
+        </optgroup>
+        <optgroup label="Grok 2">
+          <option value="grok-2-latest">Grok-2</option>
+          <option value="grok-2-vision-latest">Grok-2 Vision</option>
+        </optgroup>
+      </select>
+    </label>
+    <label>
+      RAG
+      <div class="toggle active" id="ragToggle" title="Search your documents"></div>
+    </label>
   </div>
-  <div class="chat-container" id="chat"><div class="message system">Connected to Grok-4. RAG search enabled.</div></div>
+  <div class="chat-container" id="chat">
+    <div class="message system">Ready. Using <span class="model-badge">Grok-4</span> with RAG enabled.</div>
+  </div>
   <div class="input-area">
     <textarea id="input" placeholder="Ask anything..." rows="1"></textarea>
     <button id="send">Send</button>
   </div>
   <script>
-    const API='https://ccjdctnmgrweserduxhi.supabase.co/functions/v1/chat-api';
-    const chat=document.getElementById('chat'),input=document.getElementById('input'),sendBtn=document.getElementById('send'),modelSelect=document.getElementById('model'),ragCheckbox=document.getElementById('rag');
-    let messages=[];
-    function addMessage(role,content){const div=document.createElement('div');div.className='message '+role;div.textContent=content;chat.appendChild(div);chat.scrollTop=chat.scrollHeight;return div}
-    function showTyping(){const div=document.createElement('div');div.className='message assistant typing';div.innerHTML='<span></span><span></span><span></span>';div.id='typing';chat.appendChild(div);chat.scrollTop=chat.scrollHeight}
-    function hideTyping(){const el=document.getElementById('typing');if(el)el.remove()}
-    async function sendMessage(){
-      const content=input.value.trim();if(!content)return;
-      input.value='';input.style.height='auto';sendBtn.disabled=true;
-      addMessage('user',content);messages.push({role:'user',content});showTyping();
-      try{
-        const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,model:modelSelect.value,enableRag:ragCheckbox.checked})});
-        hideTyping();if(!res.ok)throw new Error('Request failed');
-        const reader=res.body.getReader(),decoder=new TextDecoder();let assistantContent='';const assistantDiv=addMessage('assistant','');
-        while(true){const{done,value}=await reader.read();if(done)break;const chunk=decoder.decode(value),lines=chunk.split('\n');
-          for(const line of lines){if(line.startsWith('data: ')){const data=line.slice(6);if(data==='[DONE]')continue;try{const json=JSON.parse(data),delta=json.choices?.[0]?.delta?.content||'';assistantContent+=delta;assistantDiv.textContent=assistantContent;chat.scrollTop=chat.scrollHeight}catch{}}}}
-        messages.push({role:'assistant',content:assistantContent});
-      }catch(err){hideTyping();addMessage('system','Error: '+err.message)}
-      sendBtn.disabled=false;input.focus();
+    const API = 'https://ccjdctnmgrweserduxhi.supabase.co/functions/v1/chat-api';
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('input');
+    const sendBtn = document.getElementById('send');
+    const modelSelect = document.getElementById('model');
+    const ragToggle = document.getElementById('ragToggle');
+    const clearBtn = document.getElementById('clear');
+    const exportBtn = document.getElementById('export');
+    let messages = [];
+    let enableRag = true;
+
+    // Load saved state
+    const saved = localStorage.getItem('nexus-chat');
+    if (saved) {
+      try {
+        const state = JSON.parse(saved);
+        messages = state.messages || [];
+        enableRag = state.enableRag ?? true;
+        if (state.model) modelSelect.value = state.model;
+        messages.forEach(m => addMessage(m.role, m.content, false));
+        if (!enableRag) ragToggle.classList.remove('active');
+      } catch {}
     }
-    sendBtn.addEventListener('click',sendMessage);
-    input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}});
-    input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px'});
+
+    function saveState() {
+      localStorage.setItem('nexus-chat', JSON.stringify({
+        messages,
+        enableRag,
+        model: modelSelect.value
+      }));
+    }
+
+    function addMessage(role, content, save = true) {
+      const div = document.createElement('div');
+      div.className = 'message ' + role;
+      div.textContent = content;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      if (save) saveState();
+      return div;
+    }
+
+    function showTyping() {
+      const div = document.createElement('div');
+      div.className = 'message assistant typing';
+      div.innerHTML = '<span></span><span></span><span></span>';
+      div.id = 'typing';
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function hideTyping() {
+      const el = document.getElementById('typing');
+      if (el) el.remove();
+    }
+
+    async function sendMessage() {
+      const content = input.value.trim();
+      if (!content) return;
+
+      input.value = '';
+      input.style.height = 'auto';
+      sendBtn.disabled = true;
+
+      addMessage('user', content);
+      messages.push({ role: 'user', content });
+      showTyping();
+
+      try {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages,
+            model: modelSelect.value,
+            enableRag
+          })
+        });
+
+        hideTyping();
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'Request failed');
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let assistantContent = '';
+        const assistantDiv = addMessage('assistant', '', false);
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+              try {
+                const json = JSON.parse(data);
+                const delta = json.choices?.[0]?.delta?.content || '';
+                assistantContent += delta;
+                assistantDiv.textContent = assistantContent;
+                chat.scrollTop = chat.scrollHeight;
+              } catch {}
+            }
+          }
+        }
+
+        messages.push({ role: 'assistant', content: assistantContent });
+        saveState();
+      } catch (err) {
+        hideTyping();
+        const errorDiv = addMessage('system', 'Error: ' + err.message, false);
+        errorDiv.classList.add('error');
+      }
+
+      sendBtn.disabled = false;
+      input.focus();
+    }
+
+    // Event listeners
+    sendBtn.addEventListener('click', sendMessage);
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    input.addEventListener('input', () => {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+    });
+
+    ragToggle.addEventListener('click', () => {
+      enableRag = !enableRag;
+      ragToggle.classList.toggle('active', enableRag);
+      saveState();
+    });
+
+    modelSelect.addEventListener('change', saveState);
+
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Clear all messages?')) {
+        messages = [];
+        chat.innerHTML = '<div class="message system">Chat cleared. Using <span class="model-badge">' + modelSelect.options[modelSelect.selectedIndex].text + '</span></div>';
+        saveState();
+      }
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const text = messages.map(m => `${m.role.toUpperCase()}:\n${m.content}`).join('\n\n---\n\n');
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'nexus-chat-' + new Date().toISOString().slice(0, 10) + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Focus input on load
+    input.focus();
   </script>
 </body>
 </html>
