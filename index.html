@@ -11,10 +11,8 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%233b82f6' rx='20' width='100' height='100'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>N</text></svg>">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#09090b;--surface:#18181b;--surface2:#27272a;--border:#3f3f46;--text:#fafafa;--text-dim:#a1a1aa;--primary:#3b82f6;--primary-dim:#1d4ed8;--danger:#ef4444;--success:#22c55e;--warning:#f59e0b}
+    :root{--bg:#09090b;--surface:#18181b;--surface2:#27272a;--border:#3f3f46;--text:#fafafa;--text-dim:#a1a1aa;--primary:#3b82f6;--primary-dim:#1d4ed8;--danger:#ef4444;--success:#22c55e;--warning:#f59e0b;--purple:#8b5cf6}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
-
-    /* Header */
     header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface)}
     .header-left{display:flex;align-items:center;gap:12px}
     .logo{width:36px;height:36px;background:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 50%,#ec4899 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:white}
@@ -24,11 +22,9 @@
     .btn-icon:hover{background:var(--surface2);color:var(--text);border-color:var(--text-dim)}
     .btn-icon.danger:hover{background:rgba(239,68,68,0.1);border-color:var(--danger);color:var(--danger)}
     .btn-icon.active{background:var(--primary);border-color:var(--primary);color:white}
-
-    /* Settings Panel */
     .settings-toggle{display:none}
     .settings{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;background:var(--surface);border-bottom:1px solid var(--border)}
-    .settings-toggle:checked~.settings{max-height:300px;padding:12px 16px}
+    .settings-toggle:checked~.settings{max-height:400px;padding:12px 16px}
     .settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
     .setting-item{display:flex;flex-direction:column;gap:6px}
     .setting-item label{font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);font-weight:500}
@@ -43,8 +39,6 @@
     .toggle.active{background:var(--primary)}
     .toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
     .toggle.active::after{transform:translateX(20px)}
-
-    /* Chat Container */
     .chat-container{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
     .message{max-width:85%;padding:14px 18px;border-radius:20px;line-height:1.6;animation:slideIn 0.3s ease}
     @keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -52,19 +46,17 @@
     .message.assistant{background:var(--surface);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:6px}
     .message.system{background:transparent;color:var(--text-dim);font-size:12px;text-align:center;align-self:center;padding:8px 16px}
     .message.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5}
-    .message img{max-width:200px;max-height:200px;border-radius:12px;margin-top:8px;cursor:pointer}
-    .message pre{background:rgba(0,0,0,0.4);padding:12px;border-radius:8px;overflow-x:auto;margin:8px 0;font-size:13px}
+    .message img{max-width:280px;max-height:280px;border-radius:12px;margin:8px 0;cursor:pointer;display:block}
+    .message .gen-img{border:2px solid var(--purple);box-shadow:0 4px 12px rgba(139,92,246,0.3)}
+    .message pre{background:rgba(0,0,0,0.4);padding:12px;border-radius:8px;overflow-x:auto;margin:8px 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
     .message code{font-family:'SF Mono',Monaco,'Cascadia Code',monospace;font-size:0.9em}
     .message:not(pre) code{background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px}
-
-    /* Typing Indicator */
+    .ocr-text{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:12px;margin-top:8px;font-family:monospace;font-size:13px;white-space:pre-wrap}
     .typing{display:flex;gap:6px;padding:14px 18px;align-items:center}
     .typing span{width:8px;height:8px;background:var(--text-dim);border-radius:50%;animation:pulse 1.4s infinite ease-in-out}
     .typing span:nth-child(1){animation-delay:-0.32s}
     .typing span:nth-child(2){animation-delay:-0.16s}
     @keyframes pulse{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
-
-    /* Input Area */
     .input-area{padding:12px 16px;border-top:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;gap:10px}
     .input-row{display:flex;gap:10px;align-items:flex-end}
     .input-wrapper{flex:1;position:relative;display:flex;align-items:flex-end;background:var(--surface2);border:1px solid var(--border);border-radius:16px;transition:border-color 0.2s}
@@ -75,32 +67,30 @@
     .input-btn{background:transparent;border:none;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);cursor:pointer;transition:all 0.2s;font-size:18px}
     .input-btn:hover{background:var(--border);color:var(--text)}
     .input-btn.has-file{color:var(--success)}
+    .input-btn.gen-mode{color:var(--purple)}
     #send{background:linear-gradient(135deg,var(--primary),var(--primary-dim));border:none;border-radius:14px;padding:14px 24px;color:white;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:15px;white-space:nowrap}
     #send:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,130,246,0.4)}
     #send:active{transform:translateY(0)}
     #send:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
-
-    /* Image Preview */
+    #send.gen-mode{background:linear-gradient(135deg,var(--purple),#7c3aed)}
     .image-preview{display:none;padding:0 16px 8px}
-    .image-preview.show{display:block}
+    .image-preview.show{display:flex;align-items:center;gap:12px}
     .preview-container{position:relative;display:inline-block}
     .preview-img{max-height:80px;border-radius:8px;border:1px solid var(--border)}
     .preview-remove{position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:var(--danger);border:none;border-radius:50%;color:white;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-
-    /* Hidden file input */
+    .mode-pills{display:flex;gap:6px}
+    .mode-pill{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:4px 10px;font-size:11px;color:var(--text-dim);cursor:pointer;transition:all 0.2s}
+    .mode-pill:hover{border-color:var(--text-dim)}
+    .mode-pill.active{background:var(--primary);border-color:var(--primary);color:white}
+    .mode-pill.ocr.active{background:var(--success);border-color:var(--success)}
     #imageInput{display:none}
-
-    /* Modal */
     .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:100;align-items:center;justify-content:center}
     .modal.show{display:flex}
     .modal img{max-width:90%;max-height:90%;border-radius:8px}
     .modal-close{position:absolute;top:20px;right:20px;background:var(--surface);border:none;width:40px;height:40px;border-radius:50%;color:white;font-size:20px;cursor:pointer}
-
-    @media(max-width:480px){
-      .settings-grid{grid-template-columns:1fr}
-      .message{max-width:90%}
-      #send{padding:14px 18px}
-    }
+    .commands{font-size:11px;color:var(--text-dim);padding:4px 0}
+    .commands span{background:var(--surface2);padding:2px 6px;border-radius:4px;margin-right:6px}
+    @media(max-width:480px){.settings-grid{grid-template-columns:1fr}.message{max-width:90%}#send{padding:14px 18px}.message img{max-width:220px}}
   </style>
 </head>
 <body>
@@ -115,7 +105,6 @@
       <button class="btn-icon danger" id="clear" title="Clear">🗑️</button>
     </div>
   </header>
-
   <input type="checkbox" id="settingsToggle" class="settings-toggle">
   <div class="settings">
     <div class="settings-grid">
@@ -132,10 +121,10 @@
             <option value="grok-code-fast-1">Grok Code Fast 1 💻</option>
           </optgroup>
           <optgroup label="Grok 4">
-            <option value="grok-4-latest">Grok-4 (Latest)</option>
+            <option value="grok-4-latest">Grok-4</option>
           </optgroup>
           <optgroup label="Grok 3">
-            <option value="grok-3-latest">Grok-3 (Latest)</option>
+            <option value="grok-3-latest">Grok-3</option>
             <option value="grok-3-fast">Grok-3 Fast</option>
           </optgroup>
           <optgroup label="Grok 3 Mini">
@@ -167,72 +156,54 @@
       <span style="font-size:13px;color:var(--text-dim)">Web Search</span>
       <div class="toggle" id="webToggle"></div>
     </div>
+    <div class="commands">Commands: <span>/imagine</span> generate image <span>/ocr</span> extract text from image</div>
   </div>
-
   <div class="chat-container" id="chat">
-    <div class="message system">Ready to chat. Tap ⚙️ for settings.</div>
+    <div class="message system">Ready. Use /imagine to generate images, /ocr with an image to extract text.</div>
   </div>
-
   <div class="image-preview" id="imagePreview">
     <div class="preview-container">
       <img class="preview-img" id="previewImg">
       <button class="preview-remove" id="removeImage">×</button>
     </div>
+    <div class="mode-pills">
+      <div class="mode-pill active" data-mode="chat">Chat</div>
+      <div class="mode-pill ocr" data-mode="ocr">OCR</div>
+    </div>
   </div>
-
   <div class="input-area">
     <div class="input-row">
       <div class="input-wrapper">
-        <textarea id="input" placeholder="Message Nexus..." rows="1"></textarea>
+        <textarea id="input" placeholder="Message Nexus... (/imagine or /ocr)" rows="1"></textarea>
         <div class="input-actions">
+          <button class="input-btn" id="genBtn" title="Generate Image">🎨</button>
           <button class="input-btn" id="attachBtn" title="Attach Image">📷</button>
         </div>
       </div>
       <button id="send">Send</button>
     </div>
   </div>
-
   <input type="file" id="imageInput" accept="image/*">
-
   <div class="modal" id="imageModal">
     <button class="modal-close" id="modalClose">×</button>
     <img id="modalImg">
   </div>
-
   <script>
     const API = 'https://ccjdctnmgrweserduxhi.supabase.co/functions/v1/chat-api';
-    const chat = document.getElementById('chat');
-    const input = document.getElementById('input');
-    const sendBtn = document.getElementById('send');
-    const modelSelect = document.getElementById('model');
-    const tempSlider = document.getElementById('temp');
-    const tempValue = document.getElementById('tempValue');
-    const systemPrompt = document.getElementById('systemPrompt');
-    const ragToggle = document.getElementById('ragToggle');
-    const webToggle = document.getElementById('webToggle');
-    const clearBtn = document.getElementById('clear');
-    const exportBtn = document.getElementById('export');
-    const attachBtn = document.getElementById('attachBtn');
-    const imageInput = document.getElementById('imageInput');
-    const imagePreview = document.getElementById('imagePreview');
-    const previewImg = document.getElementById('previewImg');
-    const removeImageBtn = document.getElementById('removeImage');
-    const imageModal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImg');
-    const modalClose = document.getElementById('modalClose');
+    const $ = id => document.getElementById(id);
+    const chat = $('chat'), input = $('input'), sendBtn = $('send');
+    const modelSelect = $('model'), tempSlider = $('temp'), tempValue = $('tempValue');
+    const systemPrompt = $('systemPrompt'), ragToggle = $('ragToggle'), webToggle = $('webToggle');
+    const clearBtn = $('clear'), exportBtn = $('export'), attachBtn = $('attachBtn'), genBtn = $('genBtn');
+    const imageInput = $('imageInput'), imagePreview = $('imagePreview'), previewImg = $('previewImg');
+    const removeImageBtn = $('removeImage'), imageModal = $('imageModal'), modalImg = $('modalImg'), modalClose = $('modalClose');
+    const modePills = document.querySelectorAll('.mode-pill');
 
-    let messages = [];
-    let settings = {
-      enableRag: true,
-      enableWeb: false,
-      temperature: 0.7,
-      systemPrompt: '',
-      model: 'grok-4.1-thinking'
-    };
-    let currentImage = null;
+    let messages = [], currentImage = null, imageMode = 'chat', isGenerating = false;
+    let settings = { enableRag: true, enableWeb: false, temperature: 0.7, systemPrompt: '', model: 'grok-4.1-thinking' };
 
-    // Load saved state
-    const saved = localStorage.getItem('nexus-state');
+    // Load state
+    const saved = localStorage.getItem('nexus-state-v2');
     if (saved) {
       try {
         const state = JSON.parse(saved);
@@ -244,67 +215,171 @@
         systemPrompt.value = settings.systemPrompt || '';
         if (!settings.enableRag) ragToggle.classList.remove('active');
         if (settings.enableWeb) webToggle.classList.add('active');
-        messages.forEach(m => renderMessage(m.role, m.content, m.image, false));
+        messages.forEach(m => renderMessage(m.role, m.content, m.image, m.isGenerated, false));
       } catch {}
     }
 
     function saveState() {
-      localStorage.setItem('nexus-state', JSON.stringify({ messages, settings }));
+      localStorage.setItem('nexus-state-v2', JSON.stringify({ messages, settings }));
     }
 
-    function renderMessage(role, content, image = null, save = true) {
+    function renderMessage(role, content, image = null, isGenerated = false, save = true) {
       const div = document.createElement('div');
       div.className = 'message ' + role;
-
       if (image && role === 'user') {
         const img = document.createElement('img');
         img.src = image;
         img.onclick = () => showModal(image);
         div.appendChild(img);
-        div.appendChild(document.createElement('br'));
       }
-
-      const text = document.createTextNode(content);
-      div.appendChild(text);
+      if (isGenerated && role === 'assistant') {
+        const img = document.createElement('img');
+        img.src = image;
+        img.className = 'gen-img';
+        img.onclick = () => showModal(image);
+        div.appendChild(img);
+      }
+      if (content) {
+        const text = document.createElement('div');
+        text.textContent = content;
+        div.appendChild(text);
+      }
       chat.appendChild(div);
       chat.scrollTop = chat.scrollHeight;
       if (save) saveState();
       return div;
     }
 
-    function showTyping() {
+    function showTyping(text = '') {
+      hideTyping();
       const div = document.createElement('div');
       div.className = 'message assistant typing';
-      div.innerHTML = '<span></span><span></span><span></span>';
       div.id = 'typing';
+      div.innerHTML = text ? `<span style="animation:none;width:auto;height:auto;background:none">${text}</span>` : '<span></span><span></span><span></span>';
       chat.appendChild(div);
       chat.scrollTop = chat.scrollHeight;
     }
 
-    function hideTyping() {
-      document.getElementById('typing')?.remove();
+    function hideTyping() { $('typing')?.remove(); }
+    function showModal(src) { modalImg.src = src; imageModal.classList.add('show'); }
+
+    async function generateImage(prompt) {
+      showTyping('🎨 Generating image...');
+      try {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'generate-image', prompt })
+        });
+        const data = await res.json();
+        hideTyping();
+        if (data.images?.[0]?.error) throw new Error(data.images[0].error);
+        if (data.images?.[0]?.b64) {
+          const imgSrc = 'data:image/jpeg;base64,' + data.images[0].b64;
+          messages.push({ role: 'assistant', content: '', image: imgSrc, isGenerated: true });
+          renderMessage('assistant', '', imgSrc, true);
+        } else throw new Error('No image returned');
+      } catch (err) {
+        hideTyping();
+        renderMessage('system', 'Error: ' + err.message, null, false, false);
+      }
     }
 
-    function showModal(src) {
-      modalImg.src = src;
-      imageModal.classList.add('show');
+    async function extractOCR(imageData) {
+      showTyping('📝 Extracting text...');
+      try {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [{
+              role: 'user',
+              content: [
+                { type: 'text', text: 'Extract ALL text from this image. Return ONLY the extracted text, preserving the original formatting, layout, and line breaks as much as possible. Do not add any commentary.' },
+                { type: 'image_url', image_url: { url: imageData } }
+              ]
+            }],
+            model: 'grok-2-vision-latest',
+            temperature: 0.1
+          })
+        });
+        hideTyping();
+        if (!res.ok) throw new Error('OCR failed');
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let text = '';
+        const div = renderMessage('assistant', '', null, false, false);
+        const ocrBox = document.createElement('div');
+        ocrBox.className = 'ocr-text';
+        div.appendChild(ocrBox);
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          for (const line of decoder.decode(value).split('\n')) {
+            if (line.startsWith('data: ') && line.slice(6) !== '[DONE]') {
+              try {
+                const delta = JSON.parse(line.slice(6)).choices?.[0]?.delta?.content || '';
+                text += delta;
+                ocrBox.textContent = text;
+                chat.scrollTop = chat.scrollHeight;
+              } catch {}
+            }
+          }
+        }
+        messages.push({ role: 'assistant', content: text });
+        saveState();
+      } catch (err) {
+        hideTyping();
+        renderMessage('system', 'Error: ' + err.message, null, false, false);
+      }
     }
 
     async function sendMessage() {
-      const content = input.value.trim();
+      let content = input.value.trim();
       if (!content && !currentImage) return;
+
+      // Check for /imagine command
+      if (content.toLowerCase().startsWith('/imagine ')) {
+        const prompt = content.slice(9).trim();
+        if (!prompt) return;
+        input.value = '';
+        renderMessage('user', '🎨 ' + prompt);
+        messages.push({ role: 'user', content: '🎨 ' + prompt });
+        await generateImage(prompt);
+        return;
+      }
+
+      // Check for /ocr command
+      if (content.toLowerCase() === '/ocr' && currentImage) {
+        imageMode = 'ocr';
+      }
 
       input.value = '';
       input.style.height = 'auto';
       sendBtn.disabled = true;
 
-      const userMsg = { role: 'user', content: content || '(image)' };
-      if (currentImage) userMsg.image = currentImage;
+      // OCR mode
+      if (imageMode === 'ocr' && currentImage) {
+        renderMessage('user', 'Extract text from image:', currentImage);
+        messages.push({ role: 'user', content: 'Extract text from image:', image: currentImage });
+        const img = currentImage;
+        currentImage = null;
+        imagePreview.classList.remove('show');
+        attachBtn.classList.remove('has-file');
+        imageMode = 'chat';
+        modePills.forEach(p => p.classList.toggle('active', p.dataset.mode === 'chat'));
+        await extractOCR(img);
+        sendBtn.disabled = false;
+        input.focus();
+        return;
+      }
 
-      renderMessage('user', content || 'Analyze this image:', currentImage);
+      const userMsg = { role: 'user', content: content || 'Analyze this image' };
+      if (currentImage) userMsg.image = currentImage;
+      renderMessage('user', content || 'Analyze this image', currentImage);
       messages.push(userMsg);
 
-      // Clear image
+      const imgForRequest = currentImage;
       currentImage = null;
       imagePreview.classList.remove('show');
       attachBtn.classList.remove('has-file');
@@ -312,18 +387,12 @@
       showTyping();
 
       try {
-        // Build messages for API
         const apiMessages = [];
-
-        // Add system prompt if set
         if (settings.systemPrompt?.trim()) {
           apiMessages.push({ role: 'system', content: settings.systemPrompt.trim() });
         }
-
-        // Add conversation messages
-        messages.forEach(m => {
-          if (m.image) {
-            // Vision message with image
+        messages.filter(m => !m.isGenerated).forEach(m => {
+          if (m.image && m.role === 'user') {
             apiMessages.push({
               role: m.role,
               content: [
@@ -331,7 +400,7 @@
                 { type: 'image_url', image_url: { url: m.image } }
               ]
             });
-          } else {
+          } else if (m.role !== 'system') {
             apiMessages.push({ role: m.role, content: m.content });
           }
         });
@@ -347,33 +416,22 @@
             enableWeb: settings.enableWeb
           })
         });
-
         hideTyping();
-
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
           throw new Error(err.error || 'Request failed');
         }
-
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let assistantContent = '';
-        const assistantDiv = renderMessage('assistant', '', null, false);
-
+        const assistantDiv = renderMessage('assistant', '', null, false, false);
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-
-          const chunk = decoder.decode(value);
-          const lines = chunk.split('\n');
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
-              if (data === '[DONE]') continue;
+          for (const line of decoder.decode(value).split('\n')) {
+            if (line.startsWith('data: ') && line.slice(6) !== '[DONE]') {
               try {
-                const json = JSON.parse(data);
-                const delta = json.choices?.[0]?.delta?.content || '';
+                const delta = JSON.parse(line.slice(6)).choices?.[0]?.delta?.content || '';
                 assistantContent += delta;
                 assistantDiv.textContent = assistantContent;
                 chat.scrollTop = chat.scrollHeight;
@@ -381,65 +439,36 @@
             }
           }
         }
-
         messages.push({ role: 'assistant', content: assistantContent });
         saveState();
       } catch (err) {
         hideTyping();
-        const errorDiv = renderMessage('system', 'Error: ' + err.message, null, false);
+        const errorDiv = renderMessage('system', 'Error: ' + err.message, null, false, false);
         errorDiv.classList.add('error');
       }
-
       sendBtn.disabled = false;
       input.focus();
     }
 
-    // Event Listeners
-    sendBtn.addEventListener('click', sendMessage);
-
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    input.addEventListener('input', () => {
+    // Events
+    sendBtn.onclick = sendMessage;
+    input.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
+    input.oninput = () => {
       input.style.height = 'auto';
       input.style.height = Math.min(input.scrollHeight, 150) + 'px';
-    });
-
-    tempSlider.addEventListener('input', () => {
-      tempValue.textContent = tempSlider.value;
-      settings.temperature = parseFloat(tempSlider.value);
-      saveState();
-    });
-
-    modelSelect.addEventListener('change', () => {
-      settings.model = modelSelect.value;
-      saveState();
-    });
-
-    systemPrompt.addEventListener('change', () => {
-      settings.systemPrompt = systemPrompt.value;
-      saveState();
-    });
-
-    ragToggle.addEventListener('click', () => {
-      settings.enableRag = !settings.enableRag;
-      ragToggle.classList.toggle('active', settings.enableRag);
-      saveState();
-    });
-
-    webToggle.addEventListener('click', () => {
-      settings.enableWeb = !settings.enableWeb;
-      webToggle.classList.toggle('active', settings.enableWeb);
-      saveState();
-    });
-
-    attachBtn.addEventListener('click', () => imageInput.click());
-
-    imageInput.addEventListener('change', e => {
+      // Update generate mode indicator
+      const isGen = input.value.toLowerCase().startsWith('/imagine');
+      genBtn.classList.toggle('gen-mode', isGen);
+      sendBtn.classList.toggle('gen-mode', isGen);
+    };
+    tempSlider.oninput = () => { tempValue.textContent = tempSlider.value; settings.temperature = parseFloat(tempSlider.value); saveState(); };
+    modelSelect.onchange = () => { settings.model = modelSelect.value; saveState(); };
+    systemPrompt.onchange = () => { settings.systemPrompt = systemPrompt.value; saveState(); };
+    ragToggle.onclick = () => { settings.enableRag = !settings.enableRag; ragToggle.classList.toggle('active', settings.enableRag); saveState(); };
+    webToggle.onclick = () => { settings.enableWeb = !settings.enableWeb; webToggle.classList.toggle('active', settings.enableWeb); saveState(); };
+    attachBtn.onclick = () => imageInput.click();
+    genBtn.onclick = () => { input.value = '/imagine '; input.focus(); input.dispatchEvent(new Event('input')); };
+    imageInput.onchange = e => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -448,7 +477,6 @@
           previewImg.src = currentImage;
           imagePreview.classList.add('show');
           attachBtn.classList.add('has-file');
-          // Auto-switch to vision model
           if (!modelSelect.value.includes('vision')) {
             modelSelect.value = 'grok-2-vision-latest';
             settings.model = modelSelect.value;
@@ -458,38 +486,24 @@
         reader.readAsDataURL(file);
       }
       imageInput.value = '';
+    };
+    removeImageBtn.onclick = () => { currentImage = null; imagePreview.classList.remove('show'); attachBtn.classList.remove('has-file'); imageMode = 'chat'; modePills.forEach(p => p.classList.toggle('active', p.dataset.mode === 'chat')); };
+    modePills.forEach(pill => {
+      pill.onclick = () => {
+        imageMode = pill.dataset.mode;
+        modePills.forEach(p => p.classList.toggle('active', p.dataset.mode === imageMode));
+      };
     });
-
-    removeImageBtn.addEventListener('click', () => {
-      currentImage = null;
-      imagePreview.classList.remove('show');
-      attachBtn.classList.remove('has-file');
-    });
-
-    modalClose.addEventListener('click', () => imageModal.classList.remove('show'));
-    imageModal.addEventListener('click', e => {
-      if (e.target === imageModal) imageModal.classList.remove('show');
-    });
-
-    clearBtn.addEventListener('click', () => {
-      if (confirm('Clear all messages?')) {
-        messages = [];
-        chat.innerHTML = '<div class="message system">Chat cleared.</div>';
-        saveState();
-      }
-    });
-
-    exportBtn.addEventListener('click', () => {
+    modalClose.onclick = () => imageModal.classList.remove('show');
+    imageModal.onclick = e => { if (e.target === imageModal) imageModal.classList.remove('show'); };
+    clearBtn.onclick = () => { if (confirm('Clear all messages?')) { messages = []; chat.innerHTML = '<div class="message system">Chat cleared.</div>'; saveState(); } };
+    exportBtn.onclick = () => {
       const text = messages.map(m => `${m.role.toUpperCase()}:\n${m.content}`).join('\n\n---\n\n');
-      const blob = new Blob([text], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
+      a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
       a.download = 'nexus-chat-' + new Date().toISOString().slice(0, 10) + '.txt';
       a.click();
-      URL.revokeObjectURL(url);
-    });
-
+    };
     input.focus();
   </script>
 </body>
